@@ -6,7 +6,7 @@ const session = require('express-session');
 const user_login = require('./user_login');
 const oracledb = require('oracledb');
 const cors = require('cors');
-
+const marketDbOperations = require('./market_dbOperations');
 
 
 const app = express();
@@ -300,6 +300,86 @@ app.get('/bill_data/:billId', async (req, res) => {
     res.status(500).json({ error: 'Error retrieving bill data' });
   }
 });
+//-------------------------------------------Main market route handler-------------------------------------------
+app.post('/mm', async (req, res) => {
+  try {
+    const newmm = req.body;
+    const result = await marketDbOperations.createMainMarket(newmm);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({error: 'error creating new market'});
+  }
+})
+
+app.get('/mm/:idm_market', async (req, res) => {
+  try {
+    const idb_market = req.params.idb_market;
+    const bmarket = await marketDbOperations.getMainMarketById(idb_market);
+    if(bmarket){
+      res.json(bmarket);
+    } else{
+      res.status(404).json({error:'main market non existant'});
+    }
+  } catch (error) {
+    res.status(500).json({error: 'Error retrieving main market'});
+  }
+});
+
+//all main markets:
+app.get('/mm', async(req, res) => {
+  try {
+    const mmarkets = await marketDbOperations.getMainMarkets();
+    console.log('Main markets:', mmarkets);
+    if(mmarkets){
+      res.json(mmarkets);
+    }else{
+      res.status(404).json({error:`No main markets found`});
+    }
+  } catch (error) {
+    res.status(500).json({error: `Error retrieving main Markets`});
+  }
+})
+
+//-------------------------------------------Branch market route handler-------------------------------------------
+app.post('/bm', async (req, res) => {
+  try {
+    const newmm = req.body;
+    const result = await marketDbOperations.createBranchMarket(newmm);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({error: 'error creating new markeet'});
+  }
+})
+
+app.get('/bm/:idb_market', async (req, res) => {
+  try {
+    const idb_market = req.params.idb_market;
+    const bmarket = await marketDbOperations.getBranchMarketById(idb_market);
+    if(bmarket){
+      res.json(bmarket);
+    } else{
+      res.status(404).json({error:'Branch market non existant'});
+    }
+  } catch (error) {
+    res.status(500).json({error: 'Error retrieving Branch market'});
+  }
+});
+
+//get all branch markets
+app.get('/bm', async(req, res) => {
+  try {
+    const bmarkets = await marketDbOperations.getBranchMarkets();
+    console.log('bmarkets:', bmarkets);
+    if(bmarkets){
+      res.json(bmarkets);
+    }else{
+      res.status(404).json({error:`No branch markets found`});
+    }
+  } catch (error) {
+    res.status(500).json({error: `Error retrieving Branch Markets`});
+  }
+})
+
 //-------------------------------------------Listen here-------------------------------------------
 
 //listening to port

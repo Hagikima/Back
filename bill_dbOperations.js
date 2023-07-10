@@ -124,7 +124,7 @@ async function getBillsByNameOrCode(searchTerm) {
 }
 
 async function getBillHandled(usrId) {
-  const query = `SELECT bill_id, bill_name FROM bills
+  const query = `SELECT bill_id, bill_name, bill_status, des, mmarket, bmarket  FROM bills
                  WHERE bill_handler = :usrId`;
   const binds = [usrId]; // Provide the searchTerm twice as an array
 
